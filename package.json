@@ -2,7 +2,7 @@
   "name": "accounts",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Jason Werner <jason@trxrg.com>",
+  "author": "Toke Reimer Skovgaard <toke@reimerskovgaard.dk>",
   "private": false,
   "scripts": {
     "install": "cd server && npm install",
@@ -10,3 +10,4 @@
     "test": "exit 0"
   }
 }
+
