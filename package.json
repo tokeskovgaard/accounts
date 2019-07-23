@@ -6,6 +6,7 @@
   "private": false,
   "scripts": {
     "install": "cd server && npm install",
-    "start": "cd server && npm run start"
+    "start": "cd server && npm run start",
+    "test": "exit 0"
   }
 }
