@@ -7,7 +7,7 @@ const express = require('express')
 const router = express.Router()
 
 router.post('/password', function(req, res, next) {
-  passport.authenticate('index.html', { session: false }, (err, user, info) => {
+  passport.authenticate('password', { session: false }, (err, user, info) => {
     if (err || !user) {
       return res.status(400).json({
         message: 'Something is not right',
