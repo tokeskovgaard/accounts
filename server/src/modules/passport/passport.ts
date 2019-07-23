@@ -7,7 +7,7 @@ const users: { username, password }[] = [{ username: 'toke', password: 'test' }]
 
 export const PasswordStrategy = new Strategy({
     usernameField: 'username',
-    passwordField: 'index.html',
+    passwordField: 'password',
   },
   function(username, password, done) {
     //this one is typically a DB call. Assume that the returned user object is pre-formatted and ready for storing in JWT

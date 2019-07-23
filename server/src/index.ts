@@ -13,7 +13,7 @@ import { connect } from 'mongoose'
 import { PasswordStrategy,JWTStrategy } from './modules/passport/passport'
 
 
-passport.use('index.html', PasswordStrategy)
+passport.use('password', PasswordStrategy)
 passport.use('jwt', JWTStrategy);
 
 (async () => {
