@@ -1,27 +1,19 @@
 import * as passport from 'passport'
+import { ACCOUNTS_SECRET } from '../modules/common/consts'
 
 const jwt = require('jsonwebtoken')
-import { ACCOUNTS_SECRET } from '../modules/common/consts'
 
 const express = require('express')
 const router = express.Router()
 
-router.post('/password', function(req, res, next) {
-  passport.authenticate('password', { session: false }, (err, user, info) => {
-    if (err || !user) {
-      return res.status(400).json({
-        message: 'Something is not right',
-        user: user,
-      })
-    }
-    req.login(user, { session: false }, (err) => {
-      if (err) {
-        res.send(err)
-      }
-      // generate a signed son web token with the contents of user object and return it in the response
-      const token = jwt.sign(user, ACCOUNTS_SECRET)
-      return res.json({ user, token })
-    })
-  })(req, res)
+router.post('/password', passport.authenticate('password'), function(req, res) {
+  res.send(req.user)
+})
+
+const ensureAuthenticated: any = () => {}
+router.post('/jwt', ensureAuthenticated, function(req, res, next) {
+  // generate a signed son web token with the contents of user object and return it in the response
+  const token = jwt.sign(req.user, ACCOUNTS_SECRET)
+  return res.json({ user: req.user, token })
 })
 module.exports = router

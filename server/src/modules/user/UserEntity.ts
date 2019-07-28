@@ -18,7 +18,6 @@ export class Plaid {
   itemId: string
 }
 
-
 export class User extends Typegoose {
   readonly _id: ObjectId
 
@@ -28,8 +27,8 @@ export class User extends Typegoose {
   @prop()
   plaid?: Plaid
 
-  @prop({ required: true, enum: Role })
-  roles: Role[]
+  // @prop({ required: true, enum: Role })
+  // roles: Role[]
 
   @prop()
   isOnboarded?: boolean
@@ -39,6 +38,15 @@ export class User extends Typegoose {
 
   @prop()
   updatedAt: Date
+
+  @prop()
+  username: string
+
+  services: {
+    password: { passwordHash: string }
+    facebook?: { facebookId }
+    twitter?: { twitterId }
+  }
 }
 
 export default new User().getModelForClass(User, {

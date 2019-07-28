@@ -1,18 +1,29 @@
 <template>
   <div class="home">
-    <h1>Sign-up</h1>
-    <v-icon v-on:click="signUpWithFacebook()">extension</v-icon>
-
-    <hr />
-    <SignUpPassword />
+    <v-tabs>
+      <v-tab :href="'#tab-sign-up'">Sign up</v-tab>
+      <v-tab :href="'#tab-sign-in'">Sign in</v-tab>
+      <v-tab-item :value="'tab-sign-up'">
+        <v-card flat tile>
+          <SignUpPassword />
+        </v-card>
+      </v-tab-item>
+      <v-tab-item :value="'tab-sign-in'">
+        <v-card flat tile>
+          <SignInPassword />
+        </v-card>
+      </v-tab-item>
+    </v-tabs>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import SignUpPassword from '@/components/SignUpPassword.vue'
+import SignInPassword from '@/components/SignInPassword.vue'
+
 @Component({
-  components: { SignUpPassword },
+  components: { SignUpPassword, SignInPassword },
 })
 export default class Home extends Vue {}
 </script>

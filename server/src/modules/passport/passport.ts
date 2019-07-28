@@ -3,9 +3,10 @@ import { ACCOUNTS_SECRET } from '../common/consts'
 import { Strategy } from 'passport-local'
 const passportJWT = require('passport-jwt')
 
-const users: { username, password }[] = [{ username: 'toke', password: 'test' }]
+const users: { username; password; _id }[] = [{ username: 'toke', password: 'test', _id: 1 }]
 
-export const PasswordStrategy = new Strategy({
+export const PasswordStrategy = new Strategy(
+  {
     usernameField: 'username',
     passwordField: 'password',
   },
@@ -16,20 +17,18 @@ export const PasswordStrategy = new Strategy({
       return done(null, user, { message: 'Logged In Successfully' })
     }
     return done(null, false, { message: 'Incorrect email or password.' })
-  },
+  }
 )
 
-
-export const JWTStrategy = new passportJWT.Strategy({
+export const JWTStrategy = new passportJWT.Strategy(
+  {
     jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: ACCOUNTS_SECRET,
   },
   function(jwtPayload, cb) {
-
     //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
     const user = users.find(user => user.username === jwtPayload.username)
-    if (user)
-      return cb(null, user)
-    return cb(new Error("User not found"));
+    if (user) return cb(null, user)
+    return cb(new Error('User not found'))
   }
 )

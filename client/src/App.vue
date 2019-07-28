@@ -12,14 +12,16 @@
   </v-app>
 </template>
 
-<script>
-export default {
-  name: 'App',
-  components: {},
-  data() {
-    return {
-      //
-    }
-  },
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+import { Action } from 'vuex-class'
+
+@Component()
+export default class App extends Vue {
+  @Action('fetchUser') fetchUser: any
+
+  mounted() {
+    this.fetchUser()
+  }
 }
 </script>
