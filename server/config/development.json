@@ -1,6 +1,6 @@
 {
   "PORT": 4000,
-  "DB_NAME": "development-accounts",
+  "DB_NAME": "auth",
   "MONGO_HOST": "mongoAdmin:D1g0gM1g1%21@eyetree-sb2yb.mongodb.net",
   "ACCOUNTS_SECRET": "D1g0gM1g1%21",
   "PLAID_CLIENT_ID": "xxxxxxx",
