@@ -4,9 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node src/app.ts",
     "serve": "nodemon -e ts -w ./src -x npm run serve:reload",
-    "serve:reload": "ts-node src/index.ts"
+    "serve:reload": "ts-node src/app.ts"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.4.5",

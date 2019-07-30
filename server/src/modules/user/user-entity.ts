@@ -23,8 +23,11 @@ export class Plaid {
 }
 
 class PasswordService {
-  @prop({ required: true })
+  @prop()
   bcrypt!: string
+
+  @prop()
+  username!: string
 }
 
 class FacebookService {
@@ -42,14 +45,11 @@ export class User extends Typegoose {
   readonly _id: ObjectId
 
   @prop({ required: true })
-  username!: string
-
-  @prop({ required: true})
   roles!: Role[]
 
   @prop()
   services: {
-    password?: PasswordService,
+    password?: PasswordService
     facebook?: FacebookService
   }
 

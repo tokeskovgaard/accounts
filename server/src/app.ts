@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { connect } from 'mongoose'
+const mongoose = require('mongoose').set('debug', true)
 import { SessionOptions } from 'express-session'
 
 import { DB_NAME, MONGO_HOST, PORT } from './modules/common/consts'
@@ -27,7 +27,7 @@ function isAuthenticated(req, res, next) {
   res.sendStatus(HTTP.UNAUTHORIZED)
 }
 
-function session(mongooseConnection){
+function session(mongooseConnection) {
   return expressSession({
     secret: SessionSecret,
     saveUninitialized: false,
@@ -36,13 +36,12 @@ function session(mongooseConnection){
   } as SessionOptions)
 }
 
-(async () => {
-  const mongooseConnection = await connect(
+;(async () => {
+  const mongooseConnection = await mongoose.connect(
     `mongodb+srv://${MONGO_HOST}/${DB_NAME}?retryWrites=true&w=majority`,
-    { useNewUrlParser: true },
+    { useNewUrlParser: true }
   )
   console.log(`🚀 MongoDB connected at: ${MONGO_HOST}/${DB_NAME}`)
-
 
   const app = express()
   app.use(bodyParser.json())
@@ -55,8 +54,8 @@ function session(mongooseConnection){
   // Passport setup
   app.use(passport.initialize())
   app.use(passportSession())
-  app.use("/auth/password", passwordStrategy())
-  app.use("/auth/facebook", facebookStrategy())
+  app.use('/auth/password', passwordStrategy())
+  app.use('/auth/facebook', facebookStrategy())
 
   // Routes
   app.use('/register', express.static('public/spike/register.html'))
@@ -69,7 +68,6 @@ function session(mongooseConnection){
     req.logout()
     res.redirect('/spike/sign-in')
   })
-
 
   await app.listen({ port: PORT })
   console.log(`🚀 Server ready at localhost:${PORT}`)

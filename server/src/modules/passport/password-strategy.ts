@@ -1,5 +1,5 @@
 import { Strategy as LocalStrategy } from 'passport-local'
-import { Role, UserModel } from '../user/user-entity'
+import { Role, User, UserModel } from '../user/user-entity'
 import * as passport from 'passport'
 
 const HTTP = require('http-status-codes')
@@ -8,15 +8,18 @@ const bcrypt = require('bcrypt')
 const saltRounds = 12
 const ErrorOccurredMessage = 'An error occurred - Sad face :('
 
-
 function authenticateUser(username, password, done) {
-  console.log("Authenticating user")
+  console.log('Authenticating user')
   //this one is typically a DB call. Assume that the returned user object is pre-formatted and ready for storing in JWT
-  UserModel.findOne({ username: username }).exec()
-    .then(user => {
-      if (!user)
-        return done(null, false, { message: 'Incorrect username' })
+  let query = { 'services.password.username': username } as Partial<User>
+  UserModel.find(query)
+    .exec()
+    .then(users => {
+      console.log('Found user', users, username)
+      const user = users[0]
+      if (!user) return done(null, false, { message: 'Incorrect username' })
 
+      console.log('Comparing password')
       if (!bcrypt.compareSync(password, user.services.password.bcrypt))
         return done(null, false, { message: 'Incorrect password.' })
 
@@ -38,14 +41,19 @@ function registerUser(req, resp) {
   if (!password) {
     return resp.status(HTTP.BAD_REQUEST).send('Password is required')
   }
-  UserModel.findOne({ username: username }).exec()
+  UserModel.findOne({ 'services.password.username': username })
+    .exec()
     .then(existingUser => {
       if (existingUser) {
         return resp.status(HTTP.BAD_REQUEST).send('Username not available')
       }
 
       const hash = bcrypt.hashSync(password, saltRounds)
-      new UserModel({ username: username, roles: [Role.User], services: { password: { bcrypt: hash } } }).save()
+      new UserModel({
+        roles: [Role.User],
+        services: { password: { username: username, bcrypt: hash } },
+      })
+        .save()
         .then(() => resp.sendStatus(HTTP.CREATED))
         .catch(error => {
           throw error
@@ -59,16 +67,22 @@ function registerUser(req, resp) {
 export const PasswordStrategyName = 'password'
 
 export function passwordStrategy() {
-  console.log("Using password strategy")
-  passport.use(PasswordStrategyName, new LocalStrategy(
-    {
-      usernameField: 'username',
-      passwordField: 'password',
-    }, authenticateUser),
+  passport.use(
+    PasswordStrategyName,
+    new LocalStrategy(
+      {
+        usernameField: 'username',
+        passwordField: 'password',
+      },
+      authenticateUser
+    )
   )
 
   const router = require('express').Router()
   router.post('/register', registerUser)
-  router.post('/sign-in', passport.authenticate(PasswordStrategyName, { successRedirect: '/spike/profile' }))
+  router.post(
+    '/sign-in',
+    passport.authenticate(PasswordStrategyName, { successRedirect: '/spike/profile' })
+  )
   return router
 }
