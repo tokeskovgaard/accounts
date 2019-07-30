@@ -1,15 +1,20 @@
 import 'reflect-metadata'
-import * as express from 'express'
-import * as session from 'express-session'
-import * as cors from 'cors'
-import * as bodyParser from 'body-parser'
-import * as morgan from 'morgan'
-import * as flash from 'connect-flash'
+
+const express = require('express')
+const session = require('express-session')
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const morgan = require('morgan')
+const flash = require('connect-flash')
+const bcrypt = require('bcrypt')
+
 import { Strategy as LocalStrategy } from 'passport-local'
 import { connect, DeepPartial } from 'mongoose'
 import { DB_NAME, MONGO_HOST, PORT } from './modules/common/consts'
 import { ModelType, prop, Typegoose } from 'typegoose'
 import { ObjectId } from 'mongodb'
+
+const saltRounds = 12
 
 const HttpStatus = require('http-status-codes')
 
@@ -22,18 +27,21 @@ const SessionSecret = 'lossecret1337'
 
 const ErrorOccurredMessage = 'An error occurred - Sad face :('
 
+class PasswordService {
+  @prop({ required: true })
+  bcrypt: string
+}
+
 class User extends Typegoose {
   readonly _id: ObjectId
+
   @prop({ required: true })
   username: string
 
-  @prop({ required: true })
-  password: string
-
   @prop()
   services: {
-    password?: { bcrypt: string }
-  } = {}
+    password?: PasswordService
+  }
 }
 
 const UserModel = new User().getModelForClass(User, { schemaOptions: { timestamps: true } })
@@ -62,8 +70,7 @@ class UserService {
   }
 
   create(model: DeepPartial<User>): Promise<User> {
-    const user = new UserModel(model)
-    return user.save()
+    return new UserModel(model).save()
   }
 }
 
@@ -76,14 +83,16 @@ export const PasswordStrategy = new LocalStrategy(
   function(username, password, done) {
     //this one is typically a DB call. Assume that the returned user object is pre-formatted and ready for storing in JWT
     userService
-      .findOne({ password: password, username: username })
+      .findOne({ username: username })
       .then(user => {
-        if (user) {
-          console.debug('Authenticating user', user)
-          return done(null, user, { message: 'Logged In Successfully' })
-        }
-        console.debug('Could not authenticate user', username)
-        return done(null, false, { message: 'Incorrect email or password.' })
+        if (!user)
+          return done(null, false, { message: 'Incorrect username' })
+
+        if(!bcrypt.compareSync(password, user.services.password.bcrypt))
+          return done(null, false, { message: 'Incorrect password.' })
+
+        console.debug('Authenticating user', user)
+        return done(null, user, { message: 'Logged In Successfully' })
       })
       .catch(err => {
         console.error(err)
@@ -162,11 +171,10 @@ function isAuthenticated(req, res, next) {
         if (existingUser) {
           return resp.status(HttpStatus.BAD_REQUEST).send('Username not available')
         }
+        const hash = bcrypt.hashSync(password, saltRounds);
         userService
-          .create({ username: username, password: password })
-          .then(value => {
-            resp.status(HttpStatus.CREATED).send('Ok')
-          })
+          .create({ username: username, services: { password: { bcrypt: hash } } })
+          .then(() => resp.sendStatus(HttpStatus.CREATED))
           .catch(error => {
             console.error(error)
             resp.status(HttpStatus.INTERNAL_SERVER_ERROR).send(ErrorOccurredMessage)
