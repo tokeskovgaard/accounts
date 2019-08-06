@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 export const PORT: number = Number.parseInt(process.env.PORT)
 export const MONGO_HOST: string = process.env.MONGO_HOST
 export const DB_NAME: string = process.env.DB_NAME
