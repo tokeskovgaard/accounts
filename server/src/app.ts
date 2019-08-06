@@ -2,7 +2,7 @@ import 'reflect-metadata'
 const mongoose = require('mongoose').set('debug', true)
 import { SessionOptions } from 'express-session'
 
-import { DB_NAME, MONGO_HOST, PORT } from './modules/common/consts'
+import { DB_NAME, MONGO_HOST, PORT, SESSION_SECRET } from './environment'
 import { passwordStrategy } from './modules/passport/password-strategy'
 import { facebookStrategy } from './modules/passport/facebook-strategy'
 import { passportSession } from './modules/passport/passport-session'
@@ -18,7 +18,6 @@ const HTTP = require('http-status-codes')
 const passport = require('passport')
 const MongoStore = require('connect-mongo')(expressSession)
 
-const SessionSecret = 'lossecret1337'
 
 function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
@@ -29,14 +28,14 @@ function isAuthenticated(req, res, next) {
 
 function session(mongooseConnection) {
   return expressSession({
-    secret: SessionSecret,
+    secret: SESSION_SECRET,
     saveUninitialized: false,
     resave: false,
     store: new MongoStore({ mongooseConnection: mongooseConnection }),
   } as SessionOptions)
 }
 
-;(async () => {
+(async () => {
   const mongooseConnection = await mongoose.connect(
     `mongodb+srv://${MONGO_HOST}/${DB_NAME}?retryWrites=true&w=majority`,
     { useNewUrlParser: true }
@@ -57,7 +56,7 @@ function session(mongooseConnection) {
   app.use('/auth/password', passwordStrategy())
   app.use('/auth/facebook', facebookStrategy())
 
-  // Routes
+  // Routes setup
   app.use('/register', express.static('public/spike/register.html'))
   app.use('/sign-in', express.static('public/spike/sign-in.html'))
 

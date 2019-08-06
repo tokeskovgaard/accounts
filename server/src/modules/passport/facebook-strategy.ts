@@ -1,13 +1,14 @@
+import { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET } from '../../environment'
+
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 
 import { Role, UserModel } from '../user/user-entity'
 
-const FACEBOOK_APP_ID = '468518163715124'
-const FACEBOOK_APP_SECRET = 'aaf8faa3383af359d43024cc05a24bfd'
+// TODO Should not be hardcoded to localhost...
 const FACEBOOK_CALLBACK_URL = 'http://localhost:4000/auth/facebook/callback'
 
-export const FACEBOOK_STRATEGY_NAME = 'facebook'
+const FACEBOOK_STRATEGY_NAME = 'facebook'
 
 export function facebookStrategy() {
   passport.use(
