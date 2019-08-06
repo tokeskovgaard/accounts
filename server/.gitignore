@@ -6,4 +6,6 @@ yarn-error.log*
 .yarn-integrity
 
 # config
-/config/local.json
+/config/development.json
+
+.env
