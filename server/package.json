@@ -19,12 +19,11 @@
     "@types/morgan": "^1.7.36",
     "@types/passport": "^1.0.0",
     "@types/passport-local": "^1.0.33",
-    "husky": "^2.3.0",
     "nodemon": "^1.19.1",
     "prettier": "^1.17.1",
     "pretty-quick": "^1.11.0",
     "ts-node": "^8.2.0",
-    "typescript": "^3.5.1",
+    "typescript": "^3.5.1"
   },
   "dependencies": {
     "dotenv": "^8.0.0",
@@ -46,10 +45,5 @@
     "plaid": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "typegoose": "^5.6.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
   }
 }

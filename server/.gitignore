@@ -9,3 +9,4 @@ yarn-error.log*
 /config/development.json
 
 .env
+dist
